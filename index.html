@@ -23,21 +23,39 @@
 
 <div id = "theBox" class="win1" style="width: 412px; margin: auto; margin-top: 37px;background-color: #ECE9D8; border: 2px solid; border-color: #FFFFFF #848284 #848284 #FFFFFF;">
     <div style="background: linear-gradient(to right, #0A246A, #A6CAF0);; color: white; font: bold 12px Tahoma; height: 28px;">
-        <div style="float: left; padding-left: 4px; padding-top: 5px;">Game Window</div>
+        <div id="titleText" style="float: left; padding-left: 4px; padding-top: 5px;">Game Window</div>
         <button id ="button1" style="float: right; margin-top: 3px; margin-right: 3px; background-color: #ECE9D8; border: 2px solid; border-color: #FFFFFF #848284 #848284 #FFFFFF; font: 11px Tahoma; padding: 1px 5px;" onclick="closeIt()">X</button>
     </div>
 <div>
     <div> 
-        <div style="height: 200px; text-align: center; padding-top: 73px;">
-            <button id = "playButton" style = "background-color: #ECE9D8; border: 2px solid; border-color: #FFFFFF #848284 #848284 #FFFFFF; font: 11px Tahoma; padding: 3px 8px; width: 100px; height: 30px;">Play</button>
+        <div id="mainScreen" style="height: 200px; text-align: center; padding-top: 73px;">
+            <button id = "playButton" style = "background-color: #ECE9D8; border: 2px solid; border-color: #FFFFFF #848284 #848284 #FFFFFF; font: 11px Tahoma; padding: 3px 8px; width: 100px; height: 30px;" onclick="startMatchmaking()">Play</button>
         </div>
+
+        <div id="matchMakingScreen" style="display: none; height: 200px; text-align: center; padding-top: 50px;">
+            <div style="font: 12px Tahoma; margin-bottom: 18px;">Finding Opponent...</div>
+            <div style="width: 300px; margin: auto; background-color: #FFFFFF; border: 2px solid; border-color: #848284 #FFFFFF #FFFFFF #848284; height: 20px;">
+                <div id="theBar" style="width: 0px; height: 20px; background: linear-gradient(to right, #0A246A, #A6CAF0);"></div>
+            </div>
+            <div id="barNum" style="font: 11px Tahoma; margin-top: 8px;">0%</div>
+        </div>
+
+        <div id="chatScreen" style="display: none; height: 200px; padding: 10px;">
+            <div id="msgbox" style="height: 140px; overflow-y: auto; border: 2px solid; border-color: #848284 #FFFFFF #FFFFFF #848284; background-color: white; padding: 4px; font: 12px Tahoma;"></div>
+            <div style="margin-top: 6px;">
+                <textarea id="myInput" rows="2" style="width: 300px; font: 12px Tahoma; border: 2px solid; border-color: #848284 #FFFFFF #FFFFFF #848284; resize: none;"></textarea>
+                <button id="sendButton" style="background-color: #ECE9D8; border: 2px solid; border-color: #FFFFFF #848284 #848284 #FFFFFF; font: 11px Tahoma; padding: 3px 8px; margin-left: 4px;" onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+
+    </div>
     </div>
 </div>
 
 <div id="Taskbar" style="background: linear-gradient(to bottom, #245EDC, #1B4FBB); height: 30px; position: fixed; bottom: 0; left: 0; width: 100%;">
-    <button id="startBtn" style="background: linear-gradient(to bottom, #3D9B3D, #2E7D2E); color: white; font: bold 11px Tahoma; border-radius: 0 8px 8px 0; height: 30px; border: 0px; width: 80px;">Start</button>
+    <button id="startButton" style="background: linear-gradient(to bottom, #3D9B3D, #2E7D2E); color: white; font: bold 11px Tahoma; border-radius: 0 8px 8px 0; height: 30px; border: 0px; width: 80px;">Start</button>
     <div id="myClock" style="float: right; color: white; font: 11px Tahoma; padding-top: 8px; padding-right: 12px;">time</div>
-  </div>
+</div>
 <script src="script.js"></script>
 </body>
 </html>
