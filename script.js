@@ -92,4 +92,41 @@ function doTimer () {
 if (timeLeft <= 0) {
     clearInterval(roundTimer);
     console.log("timer over")
+    document.getElementById("chatScreen").style.display = "none";
+    document.getElementById("voteScreen").style.display = "block";
+    document.getElementById("titleText").innerHTML = "Game Window";
 }}
+
+function doVote(x) {
+    console.log("voted", x)
+    document.getElementById("voteScreen").style.display = "none";
+    document.getElementById("resultsScreen").style.display = "block";
+    
+
+     var opp = "ai";
+    var endString = "";
+    if (x == opp) {
+        endString = "You were right! The opponent was an AI.";
+        console.log("correct")
+        addScore();
+        localStorage.setItem("score", Score);
+    } else {
+        endString = "Wrong! The opponent was actually an AI.";
+        console.log("wrong")
+    }
+    document.getElementById("resultText").innerHTML = endString;
+}
+
+var Score = localStorage.getItem("score") ? parseInt(localStorage.getItem("score")) : 0;
+document.getElementById("scoreDisplay").innerHTML = Score;
+function addScore() {
+    Score = Score + 1;
+    document.getElementById("scoreDisplay").innerHTML = Score;
+}
+
+function playagain() {
+    console.log("here")
+    document.getElementById("resultsScreen").style.display = "none";
+    document.getElementById("msgbox").innerHTML = "";
+    startMatchmaking();
+}

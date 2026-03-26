@@ -26,6 +26,7 @@
         <div id="titleText" style="float: left; padding-left: 4px; padding-top: 5px;">Game Window</div>
         <button id ="button1" style="float: right; margin-top: 3px; margin-right: 3px; background-color: #ECE9D8; border: 2px solid; border-color: #FFFFFF #848284 #848284 #FFFFFF; font: 11px Tahoma; padding: 1px 5px;" onclick="closeIt()">X</button>
     </div>
+    <div style="text-align: right; padding-right: 8px; padding-top: 4px; font: 11px Tahoma;">Score: <span id="scoreDisplay">0</span></div>
 <div>
     <div> 
         <div id="mainScreen" style="height: 200px; text-align: center; padding-top: 73px;">
@@ -48,6 +49,15 @@
             </div>
         </div>
 
+        <div id="voteScreen" style="display: none; height: 200px; text-align: center; padding-top: 50px;">
+            <div style="font: 12px Tahoma; margin-bottom: 20px;">Was that a Human or an AI?</div>
+            <button onclick="doVote('human')" style="background-color: #ECE9D8; border: 2px solid; border-color: #FFFFFF #848284 #848284 #FFFFFF; font: bold 14px Tahoma; padding: 8px 24px; margin-right: 10px;">Human</button>
+            <button onclick="doVote('ai')" style="background-color: #ECE9D8; border: 2px solid; border-color: #FFFFFF #848284 #848284 #FFFFFF; font: bold 14px Tahoma; padding: 8px 24px;">AI</button>
+        </div>
+        <div id="resultsScreen" style="display: none; height: 200px; text-align: center; padding-top: 70px;">
+            <div id="resultText" style="font: 14px Tahoma;"></div>
+        <br><button onclick="playagain()" style="background-color: #ECE9D8; border: 2px solid; border-color: #FFFFFF #848284 #FFFFFF; font: 11px Tahoma; padding: 3px 8px;margin-top: 12px;">Play Again</button>
+        </div>
     </div>
     </div>
 </div>
