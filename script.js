@@ -63,10 +63,26 @@ function doBar() {
         document.getElementById("matchMakingScreen").style.display = "none";
         document.getElementById("chatScreen").style.display = "block";
         startTimer();
+        playerturn = true;
+        InputLocked(false);
     }
 }
 
+var playerturn = true;
+function InputLocked(locked) {
+    var inputField = document.getElementById("myInput");
+    var sendButton = document.getElementById("sendButton");
+    inputField.disabled = locked;
+    sendButton.disabled = locked;
+    if (locked) {
+        inputField.style.backgroundColor = "#d0d0d0";
+        sendButton.style.opacity = "1";
+    }
+}
+
+
 function sendMessage() {
+    if (!playerturn) { console.log("Not User's Turn"); return;}
     var x = document.getElementById("myInput").value;
     console.log("sending", x)
     var msgbox = document.getElementById("msgbox");
@@ -75,7 +91,53 @@ function sendMessage() {
     msgbox.appendChild(tempDiv);
     document.getElementById("myInput").value = "";
     msgbox.scrollTop = msgbox.scrollHeight;
+    playerturn = false;
+    InputLocked(true);
+    getAireply(x);
 }
+
+function getAireply(playerMessage) {
+    document.getElementById("typingIndicator").style.display = "block";
+    fetch("/ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            model: "qwen/qwen3-8b",
+            max_tokens: 80,
+            messages: [
+                { role: "system", content: "/no_think you are a real person chatting online. keep replies very short, 1 sentence max usually. lowercase. no punctuation at the end. typos sometimes. say 'lol' or 'idk' or 'ngl' occasionally but not every message. sometimes just reply with one word. never ask more than one question. if something is boring just say so. never say you're an AI. never say certainly, absolutely, of course, great, happy to help. you get distracted. you have a vibe." },
+                { role: "user", content: playerMessage }
+            ]
+        })
+    })
+    .then(function(response) { return response.json() })
+    .then(function(data) {
+        console.log(data)
+        if (!data.choices) { console.log("api error", data); return; }
+        var content = data.choices[0].message.content || data.choices[0].message.reasoning_content;
+        var typingDelay = content.length * 38;
+        typingDelay = Math.min(typingDelay, 3500);
+        typingDelay = Math.max(typingDelay, 600);
+        setTimeout(function() {
+            document.getElementById("typingIndicator").style.display = "none";
+            var msgbox = document.getElementById("msgbox");
+            var replyDiv = document.createElement("div");
+            replyDiv.innerHTML = "Stranger: " + content;
+            msgbox.appendChild(replyDiv);
+            msgbox.scrollTop = msgbox.scrollHeight;
+            playerturn = true;
+            InputLocked(false);
+            console.log("ai replied, player turn now")
+        }, typingDelay);
+    })
+    .catch(function(err) {
+        console.log("fetch failed", err)
+        document.getElementById("typingIndicator").style.display = "none";
+        playerturn = true;
+        InputLocked(false);
+    })
+}
+
 
 var timeLeft = 30;
 var roundTimer;
@@ -128,5 +190,7 @@ function playagain() {
     console.log("here")
     document.getElementById("resultsScreen").style.display = "none";
     document.getElementById("msgbox").innerHTML = "";
+    playerturn = true;
+    InputLocked(true);
     startMatchmaking();
 }
