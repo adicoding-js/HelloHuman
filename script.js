@@ -45,6 +45,7 @@ var barTimer;
 
 function startMatchmaking() {
     console.log("Finding Players")
+    socket.emit("findMatch");
     document.getElementById("mainScreen").style.display = "none";
     document.getElementById("matchMakingScreen").style.display = "block";
     barWidth = 0;
@@ -114,9 +115,13 @@ function sendMessage() {
     msgbox.appendChild(tempDiv);
     document.getElementById("myInput").value = "";
     msgbox.scrollTop = msgbox.scrollHeight;
-    playerturn = false;
-    InputLocked(true);
-    getAireply(x);
+    if (room) {
+        socket.emit("chatMsg", {room: room, msg: x });
+    } else {
+        playerturn = false;
+        InputLocked(true);
+        getAireply(x);
+    }
 }
 
 function getAireply(playerMessage) {
@@ -297,3 +302,43 @@ function goToVote() {
     document.getElementById("questionResultsScreen").style.display = "none";
     document.getElementById("voteScreen").style.display = "block";
 }
+
+var socket = io();
+var room = null;
+
+socket.on("connect", function() {
+    console.log("connected to server", socket.id)
+})
+socket.on("matchFound", function(data) {
+    console.log("match found", data.room)
+    room = data.room;
+    clearInterval(barTimer);
+    document.getElementById("matchMakingScreen").style.display = "none";
+    document.getElementById("chatScreen").style.display = "block";
+    document.getElementById("doodleScreen").style.display = "none";
+    document.getElementById("msgbox").style.display = "block";
+    document.getElementById("myInput").style.display = "";
+    document.getElementById("sendButton").style.display = "";
+    InputLocked(false);
+    playerturn = true;
+})
+socket.on("timerTick", function(data) {
+    if (!room) return;
+    document.getElementById("titleText").innerHTML = "Game Window - " + data.t + "s";
+})
+
+socket.on("timerDone", function() {
+    if (!room) return;
+    clearInterval(roundTimer);
+    document.getElementById("chatScreen").style.display = "none";
+    document.getElementById("voteScreen").style.display = "block";
+    document.getElementById("titleText").innerHTML = "Game Window";
+})
+
+socket.on("chatMsg", function(data) {
+    var msgbox = document.getElementById("msgbox");
+    var d = document.createElement("div");
+    d.innerHTML = "Stranger: " + data.msg;
+    msgbox.appendChild(d);
+    msgbox.scrollTop = msgbox.scrollHeight;
+})
