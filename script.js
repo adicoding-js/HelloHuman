@@ -62,13 +62,23 @@ function doBar() {
         console.log("DONE")
         document.getElementById("matchMakingScreen").style.display = "none";
         document.getElementById("chatScreen").style.display = "block";
-        var roundtype = Math.random() < 0.5 ? "chat" : "doodle";
+        var random = Math.random();
+        var roundtype = random < 0.33 ?"chat" : random < 0.66 ? "doodle" : "question";
         if (roundtype == "doodle") {
             document.getElementById("doodleScreen").style.display = "block";
             document.getElementById("msgbox").style.display = "none";
             document.getElementById("typingIndicator").style.display = "none";
             document.getElementById("myInput").style.display = "none";
             document.getElementById("sendButton").style.display = "none";
+        } else if (roundtype == "question") {
+            document.getElementById("doodleScreen").style.display = "none";
+            document.getElementById("msgbox").style.display = "none";
+            document.getElementById("typingIndicator").style.display = "none";
+            document.getElementById("myInput").style.display = "none";
+            document.getElementById("questionScreen").style.display = "block";
+            document.getElementById("sendButton").style.display = "none";
+            var questions = ["test"];
+            document.getElementById("question").innerHTML = questions[Math.floor(Math.random() * questions.length)];
         } else {
                 document.getElementById("doodleScreen").style.display = "none";
                 document.getElementById("msgbox").style.display = "block";
@@ -77,8 +87,7 @@ function doBar() {
                 InputLocked(false);
                 playerturn = true;
         }
-        startTimer();
-        
+        startTimer();       
     }
 }
 
@@ -210,6 +219,9 @@ function playagain() {
     document.getElementById("msgbox").style.display = "block";
     document.getElementById("myInput").style.display = "";
     document.getElementById("sendButton").style.display = "";
+    document.getElementById("questionScreen").style.display = "none";
+    document.getElementById("questionsInput").value + "";
+    document.getElementById("questionResultsScreen").style.display = "none";
     startMatchmaking();
 }
 
@@ -250,3 +262,38 @@ cnv.addEventListener("touchmove", function(e) {
 }, {passive: false})
 
 cnv.addEventListener("touchend", function() {painting = false;})
+
+function submitQuestionAnswer() {
+    var ans = document.getElementById("questionsInput").value;
+    if (!ans) return;
+    document.getElementById("questionScreen").style.display = "none";
+    clearInterval(roundTimer);
+    document.getElementById("titleText").innerHTML = "Game Window";
+    var theQuestion = document.getElementById("question").innerHTML;
+    fetch("/ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            model: "qwen/qwen3-8b",
+            max_tokens: 80,
+            messages: [
+                { role: "system", content: "/no_think answer the question in 1-2 sentences. casual, lowercase, like a real person. no punctuation at end." },
+                { role: "user", content: theQuestion }
+            ]
+        })
+    })
+    .then(function(r) { return r.json() })
+    .then(function(data) {
+        var aiAns = data.choices[0].message.content;
+        var coin = Math.random() < 0.5;
+        document.getElementById("answerA").innerHTML = ans;
+        document.getElementById("answerB").innerHTML = aiAns;
+        document.getElementById("chatScreen").style.display = "none";
+        document.getElementById("questionResultsScreen").style.display = "block";
+    })
+}
+
+function goToVote() {
+    document.getElementById("questionResultsScreen").style.display = "none";
+    document.getElementById("voteScreen").style.display = "block";
+}

@@ -58,6 +58,26 @@
             <button onclick="doVote('human')" style="background-color: #ECE9D8; border: 2px solid; border-color: #FFFFFF #848284 #848284 #FFFFFF; font: bold 14px Tahoma; padding: 8px 24px; margin-right: 10px;">Human</button>
             <button onclick="doVote('ai')" style="background-color: #ECE9D8; border: 2px solid; border-color: #FFFFFF #848284 #848284 #FFFFFF; font: bold 14px Tahoma; padding: 8px 24px;">AI</button>
         </div>
+            <div id="questionScreen" style="display: none; height: 200px; padding: 10px;">             
+            <div id="question" style="font: bold 12px Tahoma; margin-bottom: 10px;"></div>
+                    <textarea id="questionsInput" rows="3" style="width: 300px; font: 12px Tahoma; border: 2px solid; border-color: #848284 #FFFFFF #FFFFFF #848284; resize: none;"></textarea>
+                        <button onclick="submitQuestionAnswer()" style="background-color: #ECE9D8; border: 2px solid; border-color: #FFFFFF #848284 #848284 #FFFFFF; font: 11px Tahoma; padding: 3px 8px; margin-left: 4px;">Submit</button>
+        </div>
+        <div id="questionResultsScreen" style="display: none; height: 200px; padding: 10px;">
+            <div style="font: bold 12px Tahoma; margin-bottom: 10px;">Compare the answers:</div>
+            <div style="display: flex; gap: 10px;">
+                <div style="flex: 1; border: 2px solid; border-color: #848284 #FFFFFF #FFFFFF #848284; background: white; padding: 4px; font: 12px Tahoma;">
+                    <div style="font: bold 11px Tahoma; margin-bottom: 4px;">You:</div>
+                    <div id="answerA"></div>
+                </div>
+                <div style="flex: 1; border: 2px solid; border-color: #848284 #FFFFFF #FFFFFF #848284; background: white; padding: 4px; font: 12px Tahoma;">
+                    <div style="font: bold 11px Tahoma; margin-bottom: 4px;">Stranger:</div>
+                    <div id="answerB"></div>
+                </div>
+            </div>
+            <button onclick="goToVote()" style="background-color: #ECE9D8; border: 2px solid; border-color: #FFFFFF #848284 #848284 #FFFFFF; font: 11px Tahoma; padding: 3px 8px; margin-top: 8px;">Continue</button>
+        </div>
+
         <div id="resultsScreen" style="display: none; height: 200px; text-align: center; padding-top: 70px;">
             <div id="resultText" style="font: 14px Tahoma;"></div>
         <br><button onclick="playagain()" style="background-color: #ECE9D8; border: 2px solid; border-color: #FFFFFF #848284 #FFFFFF; font: 11px Tahoma; padding: 3px 8px;margin-top: 12px;">Play Again</button>
