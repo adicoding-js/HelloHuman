@@ -62,9 +62,23 @@ function doBar() {
         console.log("DONE")
         document.getElementById("matchMakingScreen").style.display = "none";
         document.getElementById("chatScreen").style.display = "block";
+        var roundtype = Math.random() < 0.5 ? "chat" : "doodle";
+        if (roundtype == "doodle") {
+            document.getElementById("doodleScreen").style.display = "block";
+            document.getElementById("msgbox").style.display = "none";
+            document.getElementById("typingIndicator").style.display = "none";
+            document.getElementById("myInput").style.display = "none";
+            document.getElementById("sendButton").style.display = "none";
+        } else {
+                document.getElementById("doodleScreen").style.display = "none";
+                document.getElementById("msgbox").style.display = "block";
+                document.getElementById("myInput").style.display = "";
+                document.getElementById("sendButton").style.display = "";
+                InputLocked(false);
+                playerturn = true;
+        }
         startTimer();
-        playerturn = true;
-        InputLocked(false);
+        
     }
 }
 
@@ -192,5 +206,47 @@ function playagain() {
     document.getElementById("msgbox").innerHTML = "";
     playerturn = true;
     InputLocked(true);
+    document.getElementById("doodleScreen").style.display = "none";
+    document.getElementById("msgbox").style.display = "block";
+    document.getElementById("myInput").style.display = "";
+    document.getElementById("sendButton").style.display = "";
     startMatchmaking();
 }
+
+var painting = false;
+var ctx = document.getElementById("doodleCanvas").getContext("2d");
+
+document.getElementById("doodleCanvas").onmousedown = function(e) {
+    painting = true;
+    ctx.beginPath();
+    ctx.moveTo(e.offsetX, e.offsetY);
+}
+document.getElementById("doodleCanvas").onmousemove = function(e) {
+    if (!painting) return;
+    ctx.lineTo(e.offsetX, e.offsetY);
+    ctx.stroke();
+}
+document.getElementById("doodleCanvas").onmouseup = function() {painting = false;}
+document.getElementById("doodleCanvas").onmouseleave = function() {painting = false;}
+
+var cnv = document.getElementById("doodleCanvas");
+
+cnv.addEventListener("touchstart", function (e) {
+        e.preventDefault();
+        painting = true;
+        var t = e.touches[0];
+        var r=cnv.getBoundingClientRect();
+        ctx.beginPath();
+        ctx.moveTo(t.clientX - r.left, t.clientY - r.top);
+}, {passive: false})
+
+cnv.addEventListener("touchmove", function(e) {
+    e.preventDefault();
+    if (!painting) return;
+    var t = e.touches[0];
+    var r=cnv.getBoundingClientRect();
+    ctx.lineTo(t.clientX-r.left, t.clientY - r.top);
+    ctx.stroke();
+}, {passive: false})
+
+cnv.addEventListener("touchend", function() {painting = false;})
