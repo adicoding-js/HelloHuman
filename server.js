@@ -21,6 +21,7 @@ app.post("/ai", function(req, res) {
     .then(r => r.json())
     .then(data => res.json(data));
 });
+var voteData = {};
 
 io.on("connection", function(socket) {
     console.log("someone connected", socket.id)
@@ -51,6 +52,18 @@ io.on("connection", function(socket) {
     socket.on("chatMsg", function(data) {
         socket.to(data.room).emit("chatMsg", { msg: data.msg });
     })
+
+    socket.on("submitVote", function(data) {
+        var r = data.room;
+        if (!voteData[r]) voteData[r] = {};
+        voteData[r][socket.id] = data.vote;
+        console.log("vote in", r, voteData[r]);
+        var keys = Object.keys(voteData[r]);
+        if (keys.length == 2) {
+            io.to(r).emit("voteResults", { votes: voteData[r] });
+            voteData[r] = {};
+        }
+        })
 
     socket.on("disconnect", function() {
         if (waitingPlayer == socket) waitingPlayer = null;

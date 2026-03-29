@@ -78,7 +78,7 @@ function doBar() {
             document.getElementById("myInput").style.display = "none";
             document.getElementById("questionScreen").style.display = "block";
             document.getElementById("sendButton").style.display = "none";
-            var questions = ["test"];
+            var questions = ["Describe the internet to someone who has never seen it.","Which year would you time travel to and why?","What's something you find interesting that most people don't?","If you could have a conversation with any fictional character, who would it be and why?","What's a skill you wish you had and why?","If you could instantly learn any language, which one would you choose and why?","What's a memorable dream you've had recently?","If you could live in any fictional universe, which one would it be and why?","What's a piece of advice you would give to your younger self?","If you could have any superpower, what would it be and how would you use it?"];
             document.getElementById("question").innerHTML = questions[Math.floor(Math.random() * questions.length)];
         } else {
                 document.getElementById("doodleScreen").style.display = "none";
@@ -190,21 +190,23 @@ if (timeLeft <= 0) {
 function doVote(x) {
     console.log("voted", x)
     document.getElementById("voteScreen").style.display = "none";
-    document.getElementById("resultsScreen").style.display = "block";
-    
-
-     var opp = "ai";
-    var endString = "";
-    if (x == opp) {
-        endString = "You were right! The opponent was an AI.";
-        console.log("correct")
-        addScore();
-        localStorage.setItem("score", Score);
+    if (room) {
+        socket.emit("submitVote", { room: room, vote: x });
+        document.getElementById("resultsScreen").style.display = "block";
+        document.getElementById("resultText").innerHTML = "Waiting for other player...";
     } else {
-        endString = "Wrong! The opponent was actually an AI.";
-        console.log("wrong")
+        var opp = "ai";
+        var endString = "";
+        if (x == opp) {
+            endString = "You were right! The opponent was an AI.";
+            addScore();
+            localStorage.setItem("score", Score);
+        } else {
+            endString = "Wrong! The opponent was actually an AI.";
+        }
+        document.getElementById("resultsScreen").style.display = "block";
+        document.getElementById("resultText").innerHTML = endString;
     }
-    document.getElementById("resultText").innerHTML = endString;
 }
 
 var Score = localStorage.getItem("score") ? parseInt(localStorage.getItem("score")) : 0;
@@ -331,6 +333,8 @@ socket.on("timerDone", function() {
     if (!room) return;
     clearInterval(roundTimer);
     document.getElementById("chatScreen").style.display = "none";
+    document.getElementById("questionScreen").style.display = "none";
+    document.getElementById("questionResultsScreen").style.display = "none";
     document.getElementById("voteScreen").style.display = "block";
     document.getElementById("titleText").innerHTML = "Game Window";
 })
@@ -341,4 +345,22 @@ socket.on("chatMsg", function(data) {
     d.innerHTML = "Stranger: " + data.msg;
     msgbox.appendChild(d);
     msgbox.scrollTop = msgbox.scrollHeight;
+})
+
+socket.on("voteResults", function(data) {
+    var myVote = data.votes[socket.id];
+    var keys = Object.keys(data.votes);
+    var otherKey = keys[0] == socket.id ? keys[1] : keys[0];
+    var otherVote = data.votes[otherKey];
+    var opp = "human";
+    var endString = "";
+    if (myVote == opp) {
+        endString = "You were right! The opponent was a Human.";
+        addScore();
+        localStorage.setItem("score", Score);
+    } else {
+        endString = "Wrong! The opponent was actually a Human.";
+    }
+    endString += "<br><small style='font:11px Tahoma;color:#666;'>They voted: " + otherVote + "</small>";
+    document.getElementById("resultText").innerHTML = endString;
 })
