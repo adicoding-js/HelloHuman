@@ -23,7 +23,6 @@ function doClock() {
     var s = d.getSeconds();
     var ampm = "AM";
 
-
 if (h >= 12) {
     h = h-12;
     ampm = 'PM';
@@ -60,13 +59,19 @@ function doBar() {
     console.log("bar", barWidth)
     if (barWidth >= 100) { 
         clearInterval(barTimer);
+        if (room) return;
+        minimizeWindow();
         console.log("DONE")
         document.getElementById("matchMakingScreen").style.display = "none";
         document.getElementById("chatScreen").style.display = "block";
-        var random = Math.random();
-        var roundtype = random < 0.33 ?"chat" : random < 0.66 ? "doodle" : "question";
+        var r2 = Math.random();
+        var roundtype = r2 < 0.33 ? "chat" : r2 < 0.66 ? "doodle" : "question";
         if (roundtype == "doodle") {
-            document.getElementById("doodleScreen").style.display = "block";
+            document.getElementById("paintWindow").style.display = "block";
+            document.getElementById("paintWindow").style.left = "50%";
+            document.getElementById("paintWindow").style.top = "60px";
+            document.getElementById("paintWindow").style.transform = "translateX(-50%)";
+            document.getElementById("doodleScreen").style.display = "none";
             document.getElementById("msgbox").style.display = "none";
             document.getElementById("typingIndicator").style.display = "none";
             document.getElementById("myInput").style.display = "none";
@@ -81,12 +86,11 @@ function doBar() {
             var questions = ["Describe the internet to someone who has never seen it.","Which year would you time travel to and why?","What's something you find interesting that most people don't?","If you could have a conversation with any fictional character, who would it be and why?","What's a skill you wish you had and why?","If you could instantly learn any language, which one would you choose and why?","What's a memorable dream you've had recently?","If you could live in any fictional universe, which one would it be and why?","What's a piece of advice you would give to your younger self?","If you could have any superpower, what would it be and how would you use it?"];
             document.getElementById("question").innerHTML = questions[Math.floor(Math.random() * questions.length)];
         } else {
-                document.getElementById("doodleScreen").style.display = "none";
-                document.getElementById("msgbox").style.display = "block";
-                document.getElementById("myInput").style.display = "";
-                document.getElementById("sendButton").style.display = "";
-                InputLocked(false);
-                playerturn = true;
+            document.getElementById("aimWindow").style.display = "block";
+            document.getElementById("aimWindow").style.left = "50%";
+            document.getElementById("aimWindow").style.top = "80px";
+            document.getElementById("aimWindow").style.transform = "translateX(-50%)";
+            playerturn = true;
         }
         startTimer();       
     }
@@ -103,7 +107,6 @@ function InputLocked(locked) {
         sendButton.style.opacity = "1";
     }
 }
-
 
 function sendMessage() {
     if (!playerturn) { console.log("Not User's Turn"); return;}
@@ -166,7 +169,6 @@ function getAireply(playerMessage) {
     })
 }
 
-
 var timeLeft = 30;
 var roundTimer;
 
@@ -183,8 +185,15 @@ if (timeLeft <= 0) {
     clearInterval(roundTimer);
     console.log("timer over")
     document.getElementById("chatScreen").style.display = "none";
-    document.getElementById("voteScreen").style.display = "block";
     document.getElementById("titleText").innerHTML = "Game Window";
+    document.getElementById("aimWindow").style.display = "none";
+    restoreWindow();
+    if (paintWin.style.display != "none") {
+        paintWin.style.display = "none";
+        document.getElementById("voteScreen").style.display = "block";
+    } else {
+        document.getElementById("voteScreen").style.display = "block";
+    }
 }}
 
 function doVote(x) {
@@ -229,6 +238,15 @@ function playagain() {
     document.getElementById("questionScreen").style.display = "none";
     document.getElementById("questionsInput").value + "";
     document.getElementById("questionResultsScreen").style.display = "none";
+    document.getElementById("aimWindow").style.display = "none";
+    document.getElementById("aimMsgbox").innerHTML = "";
+    document.getElementById("taskbarAimBtn").style.display = "none";
+    document.getElementById("paintWindow").style.display = "none";
+    document.getElementById("taskbarPaintBtn").style.display = "none";
+    document.getElementById("doodleResultsScreen").style.display = "none";
+    var pc = document.getElementById("paintCanvas");
+    pc.getContext("2d").clearRect(0, 0, pc.width, pc.height);
+    room = null;
     startMatchmaking();
 }
 
@@ -305,28 +323,51 @@ function goToVote() {
     document.getElementById("voteScreen").style.display = "block";
 }
 
+function goToDoodleVote() {
+    document.getElementById("doodleResultsScreen").style.display = "none";
+    document.getElementById("voteScreen").style.display = "block";
+}
+
 var socket = io();
 var room = null;
 
 socket.on("connect", function() {
     console.log("connected to server", socket.id)
 })
+
 socket.on("matchFound", function(data) {
-    console.log("match found", data.room)
+    console.log("match found", data.room, data.roundtype)
     room = data.room;
     clearInterval(barTimer);
+    barWidth = 100;
     document.getElementById("matchMakingScreen").style.display = "none";
-    document.getElementById("chatScreen").style.display = "block";
-    document.getElementById("doodleScreen").style.display = "none";
-    document.getElementById("msgbox").style.display = "block";
-    document.getElementById("myInput").style.display = "";
-    document.getElementById("sendButton").style.display = "";
-    InputLocked(false);
-    playerturn = true;
+    document.getElementById("chatScreen").style.display = "none";
+    minimizeWindow();
+    if (data.roundtype == "doodle") {
+        document.getElementById("paintWindow").style.display = "block";
+        document.getElementById("paintWindow").style.left = "50%";
+        document.getElementById("paintWindow").style.top = "60px";
+        document.getElementById("paintWindow").style.transform = "translateX(-50%)";
+    } else if (data.roundtype == "question") {
+        restoreWindow();
+        document.getElementById("chatScreen").style.display = "block";
+        document.getElementById("questionScreen").style.display = "block";
+        var questions = ["Describe the internet to someone who has never seen it.","Which year would you time travel to and why?","What's something you find interesting that most people don't?","If you could have a conversation with any fictional character, who would it be and why?","What's a skill you wish you had and why?","If you could instantly learn any language, which one would you choose and why?","What's a memorable dream you've had recently?","If you could live in any fictional universe, which one would it be and why?","What's a piece of advice you would give to your younger self?","If you could have any superpower, what would it be and how would you use it?"];
+        document.getElementById("question").innerHTML = questions[Math.floor(Math.random() * questions.length)];
+    } else {
+        document.getElementById("aimWindow").style.display = "block";
+        document.getElementById("aimWindow").style.left = "50%";
+        document.getElementById("aimWindow").style.top = "80px";
+        document.getElementById("aimWindow").style.transform = "translateX(-50%)";
+        playerturn = true;
+    }
 })
+
 socket.on("timerTick", function(data) {
     if (!room) return;
     document.getElementById("titleText").innerHTML = "Game Window - " + data.t + "s";
+    document.getElementById("aimTimer").innerHTML = data.t + "s";
+    document.getElementById("paintTimer").innerHTML = data.t + "s";
 })
 
 socket.on("timerDone", function() {
@@ -335,14 +376,36 @@ socket.on("timerDone", function() {
     document.getElementById("chatScreen").style.display = "none";
     document.getElementById("questionScreen").style.display = "none";
     document.getElementById("questionResultsScreen").style.display = "none";
-    document.getElementById("voteScreen").style.display = "block";
+    document.getElementById("aimWindow").style.display = "none";
     document.getElementById("titleText").innerHTML = "Game Window";
+    restoreWindow();
+    if (paintWin.style.display != "none") {
+        var c = document.getElementById("paintCanvas");
+        var img = c.toDataURL();
+        socket.emit("submitDoodle", { room: room, img: img });
+        paintWin.style.display = "none";
+        document.getElementById("resultsScreen").style.display = "block";
+        document.getElementById("resultText").innerHTML = "Waiting for other player's doodle...";
+    } else {
+        document.getElementById("voteScreen").style.display = "block";
+    }
+})
+
+socket.on("doodleResults", function(data) {
+    document.getElementById("resultsScreen").style.display = "none";
+    var keys = Object.keys(data.imgs);
+    var myImg = data.imgs[socket.id];
+    var otherKey = keys[0] == socket.id ? keys[1] : keys[0];
+    var theirImg = data.imgs[otherKey];
+    document.getElementById("myDoodle").src = myImg;
+    document.getElementById("theirDoodle").src = theirImg;
+    document.getElementById("doodleResultsScreen").style.display = "block";
 })
 
 socket.on("chatMsg", function(data) {
-    var msgbox = document.getElementById("msgbox");
+    var msgbox = document.getElementById("aimMsgbox");
     var d = document.createElement("div");
-    d.innerHTML = "Stranger: " + data.msg;
+    d.innerHTML = "<b style='color:#8B0000;'>Stranger:</b> " + data.msg;
     msgbox.appendChild(d);
     msgbox.scrollTop = msgbox.scrollHeight;
 })
@@ -364,3 +427,161 @@ socket.on("voteResults", function(data) {
     endString += "<br><small style='font:11px Tahoma;color:#666;'>They voted: " + otherVote + "</small>";
     document.getElementById("resultText").innerHTML = endString;
 })
+
+var dragging = false;
+var dragOffX = 0;
+var dragOffY = 0;
+
+document.getElementById("titleBar").onmousedown = function(e) {
+    if (e.target.id == "button1") return;
+    dragging = true;
+    dragOffX = e.clientX - theBox.getBoundingClientRect().left;
+    dragOffY = e.clientY - theBox.getBoundingClientRect().top;
+    theBox.style.position = "fixed";
+    theBox.style.margin = "0";
+}
+
+var aimDragging = false;
+var aimOffx = 0;
+var aimOffy = 0;
+var aimwin = document.getElementById("aimWindow");
+
+document.getElementById("aimTitleBar").onmousedown = function(e) {
+    if (e.target.tagName == "BUTTON") return;
+    aimDragging = true;
+    aimOffx = e.clientX - aimwin.getBoundingClientRect().left;
+    aimOffy = e.clientY - aimwin.getBoundingClientRect().top;
+    aimwin.style.transform = "none";
+}
+
+var paintDragging = false;
+var paintOffX = 0;
+var paintOffY = 0;
+var paintWin = document.getElementById("paintWindow");
+
+document.getElementById("paintTitleBar").onmousedown = function(e) {
+    if (e.target.tagName == "BUTTON" || e.target.tagName == "INPUT") return;
+    paintDragging = true;
+    paintOffX = e.clientX - paintWin.getBoundingClientRect().left;
+    paintOffY = e.clientY - paintWin.getBoundingClientRect().top;
+    paintWin.style.transform = "none";
+}
+
+document.onmousemove = function(e) {
+    if (dragging) {
+        theBox.style.left = (e.clientX - dragOffX) + "px";
+        theBox.style.top = (e.clientY - dragOffY) + "px";
+    }
+    if (aimDragging) {
+        aimwin.style.left = (e.clientX - aimOffx) + "px";
+        aimwin.style.top = (e.clientY - aimOffy) + "px";
+    }
+    if (paintDragging) {
+        paintWin.style.left = (e.clientX - paintOffX) + "px";
+        paintWin.style.top = (e.clientY - paintOffY) + "px";
+    }
+}
+document.onmouseup = function() { dragging = false; aimDragging = false; paintDragging = false; }
+
+function minimizeWindow() {
+    theBox.style.display = "none";
+    document.getElementById("taskbarGameBtn").style.display = "inline-block";
+}
+function restoreWindow() {
+    theBox.style.display = "block";
+    document.getElementById("taskbarGameBtn").style.display = "none";
+}
+
+function closeAim() {
+    aimwin.style.display = "none";
+    document.getElementById("taskbarAimBtn").style.display = "inline-block";
+}
+function restoreAim() {
+    aimwin.style.display = "block";
+    document.getElementById("taskbarAimBtn").style.display = "none";
+}
+
+function closePaint() {
+    paintWin.style.display = "none";
+    document.getElementById("taskbarPaintBtn").style.display = "inline-block";
+}
+function restorePaint() {
+    paintWin.style.display = "block";
+    document.getElementById("taskbarPaintBtn").style.display = "none";
+}
+
+function sendAimMessage() {
+    if (!playerturn) return;
+    var x = document.getElementById("aimInput").value;
+    if (!x) return;
+    var msgbox = document.getElementById("aimMsgbox");
+    var d = document.createElement("div");
+    d.innerHTML = "<b style='color:#00008B;'>You:</b> " + x;
+    msgbox.appendChild(d);
+    msgbox.scrollTop = msgbox.scrollHeight;
+    document.getElementById("aimInput").value = "";
+    if (room) {
+        socket.emit("chatMsg", { room: room, msg: x });
+    } else {
+        playerturn = false;
+        document.getElementById("aimSend").disabled = true;
+        document.getElementById("aimTyping").style.display = "block";
+        getAimAiReply(x);
+    }
+}
+
+function getAimAiReply(playerMessage) {
+    fetch("/ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            model: "qwen/qwen3-8b",
+            max_tokens: 80,
+            messages: [
+                { role: "system", content: "/no_think you are a real person chatting online. keep replies very short, 1 sentence max usually. lowercase. no punctuation at the end. typos sometimes. say 'lol' or 'idk' or 'ngl' occasionally but not every message. sometimes just reply with one word. never ask more than one question. if something is boring just say so. never say you're an AI." },
+                { role: "user", content: playerMessage }
+            ]
+        })
+    })
+    .then(function(r) { return r.json() })
+    .then(function(data) {
+        var content = data.choices[0].message.content;
+        var delay = Math.min(Math.max(content.length * 38, 600), 3500);
+        setTimeout(function() {
+            document.getElementById("aimTyping").style.display = "none";
+            var msgbox = document.getElementById("aimMsgbox");
+            var d = document.createElement("div");
+            d.innerHTML = "<b style='color:#8B0000;'>Stranger:</b> " + content;
+            msgbox.appendChild(d);
+            msgbox.scrollTop = msgbox.scrollHeight;
+            playerturn = true;
+            document.getElementById("aimSend").disabled = false;
+        }, delay);
+    })
+}
+
+var pctx = document.getElementById("paintCanvas").getContext("2d");
+var isPainting = false;
+
+document.getElementById("paintCanvas").onmousedown = function(e) {
+    isPainting = true;
+    pctx.beginPath();
+    pctx.moveTo(e.offsetX, e.offsetY);
+}
+document.getElementById("paintCanvas").onmousemove = function(e) {
+    if (!isPainting) return;
+    var col = document.getElementById("paintColor").value;
+    var sz = document.getElementById("paintSize").value;
+    pctx.strokeStyle = col;
+    pctx.lineWidth = sz;
+    pctx.lineTo(e.offsetX, e.offsetY);
+    pctx.stroke();
+}
+document.getElementById("paintCanvas").onmouseup = function() { isPainting = false; }
+document.getElementById("paintCanvas").onmouseleave = function() { isPainting = false; }
+
+function clearPaint() {
+    var c = document.getElementById("paintCanvas");
+    var x = c.getContext("2d");
+    x.clearRect(0, 0, c.width, c.height);
+}

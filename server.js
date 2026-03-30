@@ -22,6 +22,7 @@ app.post("/ai", function(req, res) {
     .then(data => res.json(data));
 });
 var voteData = {};
+var doodleData = {};
 
 io.on("connection", function(socket) {
     console.log("someone connected", socket.id)
@@ -34,7 +35,8 @@ io.on("connection", function(socket) {
             var room = "room_" + Date.now();
             socket.join(room);
             waitingPlayer.join(room);
-            io.to(room).emit("matchFound", { room: room });
+            var roundtype = Math.random() < 0.33 ? "chat" : Math.random() < 0.5 ? "doodle" : "question";
+io.to(room).emit("matchFound", { room: room, roundtype: roundtype });
             console.log("match made", room)
             waitingPlayer = null;
             var t = 30;
@@ -69,6 +71,17 @@ io.on("connection", function(socket) {
         if (waitingPlayer == socket) waitingPlayer = null;
         console.log("player left", socket.id)
     })
+    socket.on("submitDoodle", function(data) {
+    var r = data.room;
+    if (!doodleData[r]) doodleData[r] = {};
+    doodleData[r][socket.id] = data.img;
+    var keys = Object.keys(doodleData[r]);
+    if (keys.length == 2) {
+        io.to(r).emit("doodleResults", { imgs: doodleData[r] });
+        doodleData[r] = {};
+    }
+    });
+
 })
 
 http.listen(process.env.PORT || 3000);

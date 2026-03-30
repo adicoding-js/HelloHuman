@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/adicoding-js/HelloHuman#readme",
   "dependencies": {
+    "codex": "^0.2.3",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "socket.io": "^4.8.3"

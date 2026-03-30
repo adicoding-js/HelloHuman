@@ -22,8 +22,8 @@
 </div>
 
 <div id = "theBox" class="win1" style="width: 412px; margin: auto; margin-top: 37px;background-color: #ECE9D8; border: 2px solid; border-color: #FFFFFF #848284 #848284 #FFFFFF;">
-    <div style="background: linear-gradient(to right, #0A246A, #A6CAF0);; color: white; font: bold 12px Tahoma; height: 28px;">
-        <div id="titleText" style="float: left; padding-left: 4px; padding-top: 5px;">Game Window</div>
+    <div id="titleBar" style="background: linear-gradient(to right, #0A246A, #A6CAF0);; color: white; font: bold 12px Tahoma; height: 28px; cursor: default;">
+        <div id="titleText" style="float: left; padding-left: 4px; padding-top: 5px;"><img src="assets/computer.png" style="width:16px; height:16px; vertical-align:middle; margin-right:4px;">Game Window</div>
         <button id ="button1" style="float: right; margin-top: 3px; margin-right: 3px; background-color: #ECE9D8; border: 2px solid; border-color: #FFFFFF #848284 #848284 #FFFFFF; font: 11px Tahoma; padding: 1px 5px;" onclick="closeIt()">X</button>
     </div>
     <div style="text-align: right; padding-right: 8px; padding-top: 4px; font: 11px Tahoma;">Score: <span id="scoreDisplay">0</span></div>
@@ -86,8 +86,62 @@
     </div>
 </div>
 
+<div id="aimWindow" style="display: none; position:fixed; top:80px; left:50%; transform:translateX(-50%); width:380px; background:#ECE9D8; border:2px solid; border-color:#FFFFFF #848284 #848284 #FFFFFF; z-index:100;">
+    <div id="aimTitleBar" style="background:linear-gradient(to right, #0A246A, #A6CAF0); color:white; font:bold 12px Tahoma; height:28px; cursor:default; display:flex; align-items:center; justify-content:space-between; padding:0 4px;">
+        <span><img src="assets/aol.png" style="width:16px; height:16px; vertical-align:middle; margin-right:4px;">AIM - Stranger</span>
+        <button onclick="closeAim()" style="background:#ECE9D8; border:2px solid; border-color:#FFFFFF #848284 #848284 #FFFFFF; font:11px Tahoma; padding:1px 5px;">X</button>
+    </div>
+    <div style="padding:6px;">
+        <div id="aimMsgbox" style="height:160px; overflow-y:auto; border:2px solid; border-color:#848284 #FFFFFF #FFFFFF #848284; background:white; padding:4px; font:12px Tahoma;"></div>
+        <div id="aimTyping" style="display:none; font:italic 11px Tahoma; color:#666; padding:2px 4px;">Stranger is typing...</div>
+        <div style="margin-top:4px; display:flex; gap:4px;">
+            <textarea id="aimInput" rows="2" style="flex:1; font:12px Tahoma; border:2px solid; border-color:#848284 #FFFFFF #FFFFFF #848284; resize:none;"></textarea>
+            <button id="aimSend" onclick="sendAimMessage()" style="background:#ECE9D8; border:2px solid; border-color:#FFFFFF #848284 #848284 #FFFFFF; font:11px Tahoma; padding:3px 8px;">Send</button>
+        </div>
+        <div id="aimTimer" style="font:11px Tahoma; color:#666; text-align:right; margin-top:2px;">30s</div>
+    </div>
+</div>
+
+<div id="paintWindow" style="display:none; position:fixed; top:60px; left:50%; transform:translateX(-50%); width:440px; background:#ECE9D8; border:2px solid; border-color:#FFFFFF #848284 #848284 #FFFFFF; z-index:100;">
+    <div id="paintTitleBar" style="background:linear-gradient(to right, #0A246A, #A6CAF0); color:white; font:bold 12px Tahoma; height:28px; cursor:default; display:flex; align-items:center; justify-content:space-between; padding:0 4px;">
+        <span><img src="assets/paint.png" style="width:16px; height:16px; vertical-align:middle; margin-right:4px;">MS Paint - Draw Something</span>
+        <button onclick="closePaint()" style="background:#ECE9D8; border:2px solid; border-color:#FFFFFF #848284 #848284 #FFFFFF; font:11px Tahoma; padding:1px 5px;">X</button>
+    </div>
+    <div style="padding:6px;">
+        <div style="background:#808080; padding:2px; display:inline-block; margin-bottom:4px;">
+            <canvas id="paintCanvas" width="400" height="200" style="background:white; cursor:crosshair; display:block;"></canvas>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; margin-top:2px;">
+            <span style="font:11px Tahoma;">Color:</span>
+            <input type="color" id="paintColor" value="#000000" style="width:24px; height:24px; border:1px solid #848284; padding:0;">
+            <span style="font:11px Tahoma;">Size:</span>
+            <input type="range" id="paintSize" min="1" max="20" value="3" style="width:60px;">
+            <button onclick="clearPaint()" style="background:#ECE9D8; border:2px solid; border-color:#FFFFFF #848284 #848284 #FFFFFF; font:11px Tahoma; padding:2px 6px;">Clear</button>
+            <div id="paintTimer" style="font:11px Tahoma; color:#666; margin-left:auto;">30s</div>
+        </div>
+    </div>
+</div>
+<div id="doodleResultsScreen" style="display:none; position:fixed; top:60px; left:50%; transform:translateX(-50%); width:500px; background:#ECE9D8; border:2px solid; border-color:#FFFFFF #848284 #848284 #FFFFFF; z-index:101;">
+    <div style="background:linear-gradient(to right, #0A246A, #A6CAF0); color:white; font:bold 12px Tahoma; height:28px; display:flex; align-items:center; padding:0 8px;">Compare Drawings</div>
+    <div style="padding:8px; display:flex; gap:8px;">
+        <div style="flex:1; text-align:center;">
+            <div style="font:bold 11px Tahoma; margin-bottom:4px;">You:</div>
+            <img id="myDoodle" style="width:220px; height:110px; border:2px solid #848284; background:white;">
+        </div>
+        <div style="flex:1; text-align:center;">
+            <div style="font:bold 11px Tahoma; margin-bottom:4px;">Stranger:</div>
+            <img id="theirDoodle" style="width:220px; height:110px; border:2px solid #848284; background:white;">
+        </div>
+    </div>
+    <div style="text-align:center; padding-bottom:8px;">
+        <button onclick="goToDoodleVote()" style="background:#ECE9D8; border:2px solid; border-color:#FFFFFF #848284 #848284 #FFFFFF; font:11px Tahoma; padding:3px 8px;">Continue</button>
+    </div>
+</div>
 <div id="Taskbar" style="background: linear-gradient(to bottom, #245EDC, #1B4FBB); height: 30px; position: fixed; bottom: 0; left: 0; width: 100%;">
-    <button id="startButton" style="background: linear-gradient(to bottom, #3D9B3D, #2E7D2E); color: white; font: bold 11px Tahoma; border-radius: 0 8px 8px 0; height: 30px; border: 0px; width: 80px;">Start</button>
+    <button id="startButton" style="background: linear-gradient(to bottom, #3D9B3D, #2E7D2E); color: white; font: bold 11px Tahoma; border-radius: 0 8px 8px 0; height: 30px; border: 0px; width: 80px;"><img src="assets/taskbar.png" style="width:14px; height:14px; vertical-align:middle; margin-right:3px;">Start</button>
+    <button id="taskbarGameBtn" onclick="restoreWindow()" style="display:none; color:white; font:11px Tahoma; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); height:24px; margin-top:3px; margin-left:6px; padding:0 10px;"><img src="assets/computer.png" style="width:14px; height:14px; vertical-align:middle; margin-right:3px;">Game Window</button>
+    <button id="taskbarAimBtn" onclick="restoreAim()" style="display:none; color:white; font:11px Tahoma; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); height:24px; margin-top:3px; margin-left:6px; padding:0 10px;"><img src="assets/aol.png" style="width:14px; height:14px; vertical-align:middle; margin-right:3px;">AIM</button>
+    <button id="taskbarPaintBtn" onclick="restorePaint()" style="display:none; color:white; font:11px Tahoma; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); height:24px; margin-top:3px; margin-left:6px; padding:0 10px;"><img src="assets/paint.png" style="width:14px; height:14px; vertical-align:middle; margin-right:3px;">Paint</button>
     <div id="myClock" style="float: right; color: white; font: 11px Tahoma; padding-top: 8px; padding-right: 12px;">time</div>
 </div>
 <script src="/socket.io/socket.io.js"></script>
