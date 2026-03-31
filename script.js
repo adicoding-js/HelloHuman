@@ -77,16 +77,10 @@ function doBar() {
             document.getElementById("myInput").style.display = "none";
             document.getElementById("sendButton").style.display = "none";
         } else if (roundtype == "question") {
-            document.getElementById("doodleScreen").style.display = "none";
-            document.getElementById("msgbox").style.display = "none";
-            document.getElementById("typingIndicator").style.display = "none";
-            document.getElementById("myInput").style.display = "none";
-            document.getElementById("questionScreen").style.display = "block";
-            document.getElementById("sendButton").style.display = "none";
-            var questions = ["Describe the internet to someone who has never seen it.","Which year would you time travel to and why?","What's something you find interesting that most people don't?","If you could have a conversation with any fictional character, who would it be and why?","What's a skill you wish you had and why?","If you could instantly learn any language, which one would you choose and why?","What's a memorable dream you've had recently?","If you could live in any fictional universe, which one would it be and why?","What's a piece of advice you would give to your younger self?","If you could have any superpower, what would it be and how would you use it?"];
-            document.getElementById("question").innerHTML = questions[Math.floor(Math.random() * questions.length)];
-        } else {
-            document.getElementById("aimWindow").style.display = "block";
+            document.getElementById("msnWindow").style.display = "block";
+            document.getElementById("msnWindow").style.left = "50%";
+            document.getElementById("msnWindow").style.top = "60px";
+            document.getElementById("msnWindow").style.transform = "translateX(-50%)";
             document.getElementById("aimWindow").style.left = "50%";
             document.getElementById("aimWindow").style.top = "80px";
             document.getElementById("aimWindow").style.transform = "translateX(-50%)";
@@ -247,6 +241,9 @@ function playagain() {
     var pc = document.getElementById("paintCanvas");
     pc.getContext("2d").clearRect(0, 0, pc.width, pc.height);
     room = null;
+    document.getElementById("msnWindow").style.display = "none";
+    document.getElementById("taskbarMsnBtn").style.display = "none";
+    document.getElementById("msnInput").value = "";
     startMatchmaking();
 }
 
@@ -350,10 +347,11 @@ socket.on("matchFound", function(data) {
         document.getElementById("paintWindow").style.transform = "translateX(-50%)";
     } else if (data.roundtype == "question") {
         restoreWindow();
-        document.getElementById("chatScreen").style.display = "block";
-        document.getElementById("questionScreen").style.display = "block";
-        var questions = ["Describe the internet to someone who has never seen it.","Which year would you time travel to and why?","What's something you find interesting that most people don't?","If you could have a conversation with any fictional character, who would it be and why?","What's a skill you wish you had and why?","If you could instantly learn any language, which one would you choose and why?","What's a memorable dream you've had recently?","If you could live in any fictional universe, which one would it be and why?","What's a piece of advice you would give to your younger self?","If you could have any superpower, what would it be and how would you use it?"];
-        document.getElementById("question").innerHTML = questions[Math.floor(Math.random() * questions.length)];
+        document.getElementById("msnWindow").style.display = "block";
+        document.getElementById("msnWindow").style.left = "50%";
+        document.getElementById("msnWindow").style.top = "70px";
+        document.getElementById("msnWindow").style.transform = "translateX(-50%)";
+        document.getElementById("msnQuestion").innerHTML = data.question;
     } else {
         document.getElementById("aimWindow").style.display = "block";
         document.getElementById("aimWindow").style.left = "50%";
@@ -368,6 +366,7 @@ socket.on("timerTick", function(data) {
     document.getElementById("titleText").innerHTML = "Game Window - " + data.t + "s";
     document.getElementById("aimTimer").innerHTML = data.t + "s";
     document.getElementById("paintTimer").innerHTML = data.t + "s";
+    document.getElementById("msnTimer").innerHTML = data.t + "s";
 })
 
 socket.on("timerDone", function() {
@@ -376,6 +375,7 @@ socket.on("timerDone", function() {
     document.getElementById("chatScreen").style.display = "none";
     document.getElementById("questionScreen").style.display = "none";
     document.getElementById("questionResultsScreen").style.display = "none";
+    document.getElementById("msnWindow").style.display = "none";
     document.getElementById("aimWindow").style.display = "none";
     document.getElementById("titleText").innerHTML = "Game Window";
     restoreWindow();
@@ -426,6 +426,17 @@ socket.on("voteResults", function(data) {
     }
     endString += "<br><small style='font:11px Tahoma;color:#666;'>They voted: " + otherVote + "</small>";
     document.getElementById("resultText").innerHTML = endString;
+})
+
+socket.on("answerResults", function(data) {
+    var keys = Object.keys(data.answers);
+    var myAns = data.answers[socket.id];
+    var otherKey = keys[0] == socket.id ? keys[1] : keys[0];
+    var theirAns = data.answers[otherKey];
+    document.getElementById("resultsScreen").style.display = "none";
+    document.getElementById("answerA").innerHTML = myAns;
+    document.getElementById("answerB").innerHTML = theirAns;
+    document.getElementById("questionResultsScreen").style.display = "block";
 })
 
 var dragging = false;
@@ -480,8 +491,12 @@ document.onmousemove = function(e) {
         paintWin.style.left = (e.clientX - paintOffX) + "px";
         paintWin.style.top = (e.clientY - paintOffY) + "px";
     }
+    if (msnDragging) {
+        msnWin.style.left = (e.clientX - msnOffX) + "px";
+        msnWin.style.top = (e.clientY - msnOffY) + "px";
+    }
 }
-document.onmouseup = function() { dragging = false; aimDragging = false; paintDragging = false; }
+document.onmouseup = function() { dragging = false; aimDragging = false; paintDragging = false; msnDragging = false; }
 
 function minimizeWindow() {
     theBox.style.display = "none";
@@ -584,4 +599,61 @@ function clearPaint() {
     var c = document.getElementById("paintCanvas");
     var x = c.getContext("2d");
     x.clearRect(0, 0, c.width, c.height);
+}
+
+var msnWin = document.getElementById("msnWindow");
+var msnDragging = false;
+var msnOffX = 0;
+var msnOffY = 0;
+
+document.getElementById("msnTitleBar").onmousedown = function(e) {  
+    if (e.target.tagName == "BUTTON" || e.target.tagName == "INPUT") return;
+    msnDragging = true;
+    msnOffX = e.clientX - msnWin.getBoundingClientRect().left;
+    msnOffY = e.clientY - msnWin.getBoundingClientRect().top;
+    msnWin.style.transform = "none";
+}
+function closeMsn() {
+    msnWin.style.display = "none";
+    document.getElementById("taskbarMsnBtn").style.display = "inline-block";
+}
+
+function restoreMsn() {
+    msnWin.style.display = "block";
+    document.getElementById("taskbarMsnBtn").style.display = "none";
+}
+function submitMsnAnswer() {
+    var ans = document.getElementById("msnInput").value;
+    if (!ans) return;
+    document.getElementById("msnWindow").style.display = "none";
+    clearInterval(roundTimer);
+    document.getElementById("titleText").innerHTML = "Game Window";
+    if (room) {
+        socket.emit("submitAnswer", { room: room, answer: ans });
+        restoreWindow();
+        document.getElementById("resultsScreen").style.display = "block";
+        document.getElementById("resultText").innerHTML = "Waiting for other player's answer...";
+    } else {
+        var theQuestion = document.getElementById("msnQuestion").innerHTML;
+        fetch("/ai", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                model: "qwen/qwen3-8b",
+                max_tokens: 80,
+                messages: [
+                    { role: "system", content: "/no_think answer the question in 1-2 sentences. casual, lowercase, like a real person. no punctuation at end." },
+                    { role: "user", content: theQuestion }
+                ]
+            })
+        })
+        .then(function(r) { return r.json() })
+        .then(function(data) {
+            var aiAns = data.choices[0].message.content;
+            document.getElementById("answerA").innerHTML = ans;
+            document.getElementById("answerB").innerHTML = aiAns;
+            restoreWindow();
+            document.getElementById("questionResultsScreen").style.display = "block";
+        })
+    }
 }

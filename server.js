@@ -23,6 +23,7 @@ app.post("/ai", function(req, res) {
 });
 var voteData = {};
 var doodleData = {};
+var answerData = {};
 
 io.on("connection", function(socket) {
     console.log("someone connected", socket.id)
@@ -35,8 +36,11 @@ io.on("connection", function(socket) {
             var room = "room_" + Date.now();
             socket.join(room);
             waitingPlayer.join(room);
-            var roundtype = Math.random() < 0.33 ? "chat" : Math.random() < 0.5 ? "doodle" : "question";
-io.to(room).emit("matchFound", { room: room, roundtype: roundtype });
+            var r2 = Math.random();
+var roundtype = r2 < 0.33 ? "chat" : r2 < 0.66 ? "doodle" : "question";
+var questions = ["Describe the internet to someone who has never seen it.","Which year would you time travel to and why?","What's something you find interesting that most people don't?","If you could have a conversation with any fictional character, who would it be and why?","What's a skill you wish you had and why?","If you could instantly learn any language, which one would you choose and why?","What's a memorable dream you've had recently?","If you could live in any fictional universe, which one would it be and why?","What's a piece of advice you would give to your younger self?","If you could have any superpower, what would it be and how would you use it?"];
+var question = questions[Math.floor(Math.random() * questions.length)];
+io.to(room).emit("matchFound", { room: room, roundtype: roundtype, question: question });
             console.log("match made", room)
             waitingPlayer = null;
             var t = 30;
@@ -80,7 +84,17 @@ io.to(room).emit("matchFound", { room: room, roundtype: roundtype });
         io.to(r).emit("doodleResults", { imgs: doodleData[r] });
         doodleData[r] = {};
     }
-    });
+    })
+    socket.on("submitAnswer", function(data) {
+        var r = data.room;
+        if (!answerData[r]) answerData[r] = {};
+        answerData[r][socket.id] = data.answer;
+        var keys = Object.keys(answerData[r]);
+        if (keys.length == 2) {
+            io.to(r).emit("answerResults", { answers: answerData[r] });
+            answerData[r] = {};
+        }
+    })
 
 })
 

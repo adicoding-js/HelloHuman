@@ -14,12 +14,15 @@
 </head>
 <body style="background-color: #ECE9D8; font-family: Tahoma, sans-serif; margin: 0px; overflow: hidden;">
 
-    <div> 
-        <div> 
-            <div style="width: 100%; text-align: center;"> 
-</div>          <h1 style="color: black;" >Human or Ai?</h1> 
+    <div style="position: absolute; top: 0; left: 0; z-index: -1; pointer-events: none;"> 
+    <img src="assets/TEXT_LOGO.png" alt="Human or AI?" 
+         style="height: 350px; 
+                width: auto; 
+                image-rendering: pixelated; 
+                transform: translate(-100px, -80px); 
+                opacity: 0.8;"> 
 </div>
-</div>
+    </div>
 
 <div id = "theBox" class="win1" style="width: 412px; margin: auto; margin-top: 37px;background-color: #ECE9D8; border: 2px solid; border-color: #FFFFFF #848284 #848284 #FFFFFF;">
     <div id="titleBar" style="background: linear-gradient(to right, #0A246A, #A6CAF0);; color: white; font: bold 12px Tahoma; height: 28px; cursor: default;">
@@ -137,11 +140,29 @@
         <button onclick="goToDoodleVote()" style="background:#ECE9D8; border:2px solid; border-color:#FFFFFF #848284 #848284 #FFFFFF; font:11px Tahoma; padding:3px 8px;">Continue</button>
     </div>
 </div>
+
+<div id="msnWindow" style="display:none; position:fixed; top:70px; left:50%; transform:translateX(-50%); width:420px; background:#ECE9D8; border:2px solid; border-color:#FFFFFF #848284 #848284 #FFFFFF; z-index:100;">
+    <div id="msnTitleBar" style="background:linear-gradient(to right, #0A246A, #A6CAF0); color:white; font:bold 12px Tahoma; height:28px; cursor:default; display:flex; align-items:center; justify-content:space-between; padding:0 4px;">
+        <span><img src="assets/msn.png" style="width:16px; height:16px; vertical-align:middle; margin-right:4px;">MSN Quiz</span>
+        <button onclick="closeMsn()" style="background:#ECE9D8; border:2px solid; border-color:#FFFFFF #848284 #848284 #FFFFFF; font:11px Tahoma; padding:1px 5px;">X</button>
+    </div>
+    <div style="padding:10px;">
+        <div id="msnQuestion" style="font:bold 12px Tahoma; margin-bottom:10px; color:#0A246A;"></div>
+        <textarea id="msnInput" rows="3" style="width:370px; font:12px Tahoma; border:2px solid; border-color:#848284 #FFFFFF #FFFFFF #848284; resize:none;"></textarea>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+            <button onclick="submitMsnAnswer()" style="background:#ECE9D8; border:2px solid; border-color:#FFFFFF #848284 #848284 #FFFFFF; font:11px Tahoma; padding:3px 8px;">Submit Answer</button>
+            <div id="msnTimer" style="font:11px Tahoma; color:#666;">30s</div>
+        </div>
+    </div>
+</div>
+
+
 <div id="Taskbar" style="background: linear-gradient(to bottom, #245EDC, #1B4FBB); height: 30px; position: fixed; bottom: 0; left: 0; width: 100%;">
     <button id="startButton" style="background: linear-gradient(to bottom, #3D9B3D, #2E7D2E); color: white; font: bold 11px Tahoma; border-radius: 0 8px 8px 0; height: 30px; border: 0px; width: 80px;"><img src="assets/taskbar.png" style="width:14px; height:14px; vertical-align:middle; margin-right:3px;">Start</button>
     <button id="taskbarGameBtn" onclick="restoreWindow()" style="display:none; color:white; font:11px Tahoma; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); height:24px; margin-top:3px; margin-left:6px; padding:0 10px;"><img src="assets/computer.png" style="width:14px; height:14px; vertical-align:middle; margin-right:3px;">Game Window</button>
     <button id="taskbarAimBtn" onclick="restoreAim()" style="display:none; color:white; font:11px Tahoma; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); height:24px; margin-top:3px; margin-left:6px; padding:0 10px;"><img src="assets/aol.png" style="width:14px; height:14px; vertical-align:middle; margin-right:3px;">AIM</button>
     <button id="taskbarPaintBtn" onclick="restorePaint()" style="display:none; color:white; font:11px Tahoma; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); height:24px; margin-top:3px; margin-left:6px; padding:0 10px;"><img src="assets/paint.png" style="width:14px; height:14px; vertical-align:middle; margin-right:3px;">Paint</button>
+    <button id="taskbarMsnBtn" onclick="restoreMsn()" style="display:none; color:white; font:11px Tahoma; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); height:24px; margin-top:3px; margin-left:6px; padding:0 10px;"><img src="assets/msn.png" style="width:14px; height:14px; vertical-align:middle; margin-right:3px;">MSN Quiz</button>
     <div id="myClock" style="float: right; color: white; font: 11px Tahoma; padding-top: 8px; padding-right: 12px;">time</div>
 </div>
 <script src="/socket.io/socket.io.js"></script>
