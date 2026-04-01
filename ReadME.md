@@ -1,7 +1,7 @@
 ![HelloHuman](https://hackatime-badge.hackclub.com/U0A1XMKQU6S/HelloHuman)
 # HelloHuman 🤖or👱🏻
 
-## HelloHuman Is a cool game in which you have to talk to either a ai or an human and then vote based on that interaction that whether that person was an ai or an human!
+### HelloHuman Is a cool game in which you have to talk to either a ai or an human and then vote based on that interaction that whether that person was an ai or an human!
 
 ---
 
