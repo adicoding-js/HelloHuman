@@ -2,7 +2,8 @@
 # HelloHuman 🤖or👱🏻
 
 ### HelloHuman Is a cool game in which you have to talk to either a ai or an human and then vote based on that interaction that whether that person was an ai or an human!
-
+---
+⚠️Disclaimer for reviewers: The ai mode is broken for now so you can only test multiplayer mode. To test it, 1) Open two tabs( mame sure they are both active/open), 2) start matchmaking on one tab and when loading acreen comes, click play on the second tab. You will be assigned a gamemode and it will sync properly ( its kinda a friendly chat/minigame rn)
 ---
 
 ## How to Run
@@ -27,6 +28,7 @@ node server.js
 - Click on Play and just wait for the matchmaking and either An AI or an Human will get matched with you, interact with him and then vote!!
 ---
 ## What's in it so far
+- Multiple Game modes (MSN Quiz/question round, doodle round, simple AIM chat mode)
 - Windows xp theme (bliss wallpaper, xp start button etc)
 - Online Multiplayer with live sync and voting
 - Ai mode for Texting and question round
