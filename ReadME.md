@@ -3,7 +3,8 @@
 
 ### HelloHuman Is a cool game in which you have to talk to either a ai or an human and then vote based on that interaction that whether that person was an ai or an human!
 ---
-⚠️Disclaimer for reviewers: The ai mode is broken for now so you can only test multiplayer mode. To test it, 1) Open two tabs( mame sure they are both active/open), 2) start matchmaking on one tab and when loading acreen comes, click play on the second tab. You will be assigned a gamemode and it will sync properly ( its kinda a friendly chat/minigame rn)
+⚠️Disclaimer for reviewers: The ai mode is broken for now so you can only test multiplayer mode. To test it, 1) Open two tabs( mame sure they are both active/open, either split screen them, or just open one tab on your mobile phone and one on your pc, and try to click on both play button in the matchmaking window), 2) start matchmaking on one tab and when loading acreen comes, click play on the second tab. You will be assigned a gamemode and it will sync properly ( its kinda a friendly chat/minigame rn)
+- It does work, just try to run it properly
 ---
 
 ## How to Run
